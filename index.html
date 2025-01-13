@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Water Intake Tracker</title>
     <style>
         :root {
@@ -24,14 +25,17 @@
             padding: 2rem;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            width: 90%;
+            width: 100%;
             max-width: 500px;
+            margin: 1rem auto;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         h1 {
             color: var(--primary-color);
             margin-bottom: 2rem;
-            font-size: 2.5rem;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
             font-weight: 700;
         }
 
@@ -41,12 +45,12 @@
             padding: 1.5rem;
             border-radius: 15px;
             margin-bottom: 2rem;
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 3vw, 1.2rem);
         }
 
         #total {
             display: block;
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 6vw, 2.5rem);
             font-weight: bold;
             margin-top: 0.5rem;
         }
@@ -146,6 +150,44 @@
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                background: white;
+                display: block;
+                align-items: initial;
+                justify-content: initial;
+            }
+
+            .container {
+                padding: 1.5rem;
+                border-radius: 0;
+                box-shadow: none;
+                margin: 0;
+                max-width: 100%;
+                min-height: 100vh;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+
+            input {
+                padding: 0.8rem;
+                font-size: 1.1rem;
+            }
+
+            button {
+                padding: 0.8rem;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .container {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
