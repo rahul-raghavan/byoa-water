@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Water Intake Tracker</title>
+    <style>
+        :root {
+            --primary-color: #4FACFE;
+            --secondary-color: #00F2FE;
+            --background-color: #F8FAFC;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .total-display {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        #total {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        input {
+            width: calc(100% - 2rem);
+            padding: 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .reset-btn {
+            background: #EDF2F7;
+            color: #4A5568;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            height: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.9);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .goal-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            text-align: right;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-top: 0.5rem;
+        }
+
+        .celebration {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 2rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="celebration" id="celebration">
+        <div>
+            🎉 Congratulations! 🎉<br>
+            You've reached your daily goal!<br>
+            <button onclick="closeCelebration()" style="margin-top: 20px; font-size: 1rem;">Close</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Drink up!</h1>
+        <div class="total-display">
+            Total water consumed
+            <span id="total">0</span>
+            <span>ml</span>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+            <div class="goal-text"><span id="percentage">0</span>% of daily goal (5000ml)</div>
+        </div>
+        
+        <input type="number" id="waterAmount" placeholder="Enter amount in ml" autofocus>
+        <div class="buttons">
+            <button onclick="addWater()" class="add-btn">Add Water</button>
+            <button onclick="resetCount()" class="reset-btn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let totalWater = 0;
+        const DAILY_GOAL = 5000;
+        const totalDisplay = document.getElementById('total');
+        const input = document.getElementById('waterAmount');
+        const progressBar = document.getElementById('progress');
+        const percentageDisplay = document.getElementById('percentage');
+        const celebration = document.getElementById('celebration');
+        let goalReached = false;
+
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                addWater();
+            }
+        });
+
+        function updateProgress() {
+            const percentage = Math.min((totalWater / DAILY_GOAL) * 100, 100);
+            progressBar.style.width = percentage + '%';
+            percentageDisplay.textContent = Math.round(percentage);
+
+            // Show celebration when reaching goal for the first time
+            if (totalWater >= DAILY_GOAL && !goalReached) {
+                celebration.style.display = 'flex';
+                goalReached = true;
+            }
+        }
+
+        function closeCelebration() {
+            celebration.style.display = 'none';
+        }
+
+        function addWater() {
+            const amount = parseInt(input.value) || 0;
+            
+            totalWater += amount;
+            totalDisplay.textContent = totalWater;
+            input.value = '';
+            updateProgress();
+        }
+
+        function resetCount() {
+            totalWater = 0;
+            goalReached = false;
+            totalDisplay.textContent = totalWater;
+            updateProgress();
+        }
+    </script>
+</body>
+</html> 
